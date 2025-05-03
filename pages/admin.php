@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
 
 include('../includes/header.php'); 
 require_once('../config/db.php');
+require_once('../send_email.php');  
 ?>
 
 <div class="admin-dashboard">
@@ -64,14 +65,11 @@ require_once('../config/db.php');
                                         <?php if (!empty($row['image'])): ?>
                                             <?php
                                             $image_path = "../uploads/lost_items/" . htmlspecialchars($row['image']);
-                                            // Debug information
                                             error_log("Lost item image path in database: " . $row['image']);
                                             error_log("Full lost item image path: " . $image_path);
                                             error_log("File exists: " . (file_exists($image_path) ? "Yes" : "No"));
                                             
-                                            // Check if the file exists, if not try alternative paths
                                             if (!file_exists($image_path)) {
-                                                // Try without the lost_items directory
                                                 $alt_path = "../uploads/" . htmlspecialchars($row['image']);
                                                 if (file_exists($alt_path)) {
                                                     $image_path = $alt_path;
@@ -131,28 +129,24 @@ require_once('../config/db.php');
                                     <td><?php echo htmlspecialchars($row['location']); ?></td>
                                     <td><?php echo htmlspecialchars($row['date_found']); ?></td>
                                     <td id="found-status-<?php echo $row['found_id']; ?>">
-                                        <span class="status-badge <?php echo strtolower($row['status']); ?>">
-                                            <?php echo ucfirst($row['status']); ?>
+                                    <span class="status-badge <?= strtolower($row['status'] ?: 'unclaimed') ?>">
+                                        <?= ucfirst($row['status'] ?: 'unclaimed') ?>
                                         </span>
                                     </td>
                                     <td>
                                         <?php if (!empty($row['image'])): ?>
                                             <?php
                                             $image_path = "../uploads/found_items/" . htmlspecialchars($row['image']);
-                                            // Debug information
                                             error_log("Image path in database: " . $row['image']);
                                             error_log("Full image path: " . $image_path);
                                             error_log("File exists: " . (file_exists($image_path) ? "Yes" : "No"));
                                             
-                                            // Check if the file exists, if not try alternative paths
                                             if (!file_exists($image_path)) {
-                                                // Try without the found_items directory
                                                 $alt_path = "../uploads/" . htmlspecialchars($row['image']);
                                                 if (file_exists($alt_path)) {
                                                     $image_path = $alt_path;
                                                     error_log("Using alternative path: " . $image_path);
                                                 } else {
-                                                    // Try with just the filename
                                                     $alt_path2 = "../uploads/" . basename(htmlspecialchars($row['image']));
                                                     if (file_exists($alt_path2)) {
                                                         $image_path = $alt_path2;
@@ -184,84 +178,106 @@ require_once('../config/db.php');
         </div>
         
         <!-- Claim Requests Tab -->
-        <div class="tab-content" id="claim-requests">
-            <h3>Manage Claim Requests</h3>
-            <?php
-            // Debug: Print the SQL query
-            $sql = "SELECT c.*, f.category, f.description, f.location, f.date_found, u.name as finder_name 
-                    FROM claim c 
-                    LEFT JOIN found_item f ON c.found_id = f.found_id 
-                    LEFT JOIN user u ON f.user_id = u.user_id 
-                    ORDER BY c.created_at DESC";
-            
-            echo "<!-- Debug: SQL Query: " . htmlspecialchars($sql) . " -->";
-            
-            $result = $conn->query($sql);
-            
-            // Debug: Check for SQL errors
-            if ($result === false) {
-                echo "<!-- Debug: SQL Error: " . $conn->error . " -->";
-            }
-            
-            // Debug: Print the number of rows
-            echo "<!-- Debug: Number of rows: " . ($result ? $result->num_rows : 'Query failed') . " -->";
-            
-            if ($result && $result->num_rows > 0): ?>
-                <div class="table-container">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Item Details</th>
-                                <th>Claimant Info</th>
-                                <th>Proof Submitted</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php while ($row = $result->fetch_assoc()): ?>
-                                <tr>
-                                    <td>
-                                        <strong>Category:</strong> <?php echo htmlspecialchars($row['category'] ?? 'N/A'); ?><br>
-                                        <strong>Description:</strong> <?php echo htmlspecialchars($row['description'] ?? 'N/A'); ?><br>
-                                        <strong>Location:</strong> <?php echo htmlspecialchars($row['location'] ?? 'N/A'); ?><br>
-                                        <strong>Date Found:</strong> <?php echo htmlspecialchars($row['date_found'] ?? 'N/A'); ?>
-                                    </td>
-                                    <td>
-                                        <strong>Name:</strong> <?php echo htmlspecialchars($row['claimant_name'] ?? 'N/A'); ?><br>
-                                        <strong>Email:</strong> <?php echo htmlspecialchars($row['claimant_email'] ?? 'N/A'); ?><br>
-                                        <strong>Phone:</strong> <?php echo htmlspecialchars($row['claimant_phone'] ?? 'N/A'); ?><br>
-                                        <strong>Unique Features:</strong> <?php echo htmlspecialchars($row['unique_features'] ?? 'N/A'); ?>
-                                    </td>
-                                    <td>
-                                        <?php if (!empty($row['proof_image'])): ?>
-                                            <button class="btn btn-info view-image-btn" data-image="../uploads/proof_images/<?php echo htmlspecialchars($row['proof_image']); ?>">View Image</button>
-                                        <?php else: ?>
-                                            No Image
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge <?php echo strtolower($row['status']); ?>">
-                                            <?php echo ucfirst($row['status']); ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button onclick="updateClaimStatus('approve', <?php echo $row['claim_id']; ?>)" class="btn btn-success">Approve</button>
-                                            <button onclick="updateClaimStatus('reject', <?php echo $row['claim_id']; ?>)" class="btn btn-danger">Reject</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php else: ?>
-                <p>No claim requests to manage.</p>
-            <?php endif; ?>
+<!-- Claim Requests Tab -->
+<div class="tab-content" id="claim-requests">
+    <h3>Manage Claim Requests</h3>
+    <?php
+    $sql = "SELECT c.*, f.category, f.description, f.location, f.date_found, u.name as finder_name 
+            FROM claim c 
+            LEFT JOIN found_item f ON c.found_id = f.found_id 
+            LEFT JOIN user u ON f.user_id = u.user_id 
+            ORDER BY c.date_claimed DESC";
+
+    $result = $conn->query($sql);
+
+    if ($result && $result->num_rows > 0): ?>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Item Details</th>
+                        <th>Claimant Info</th>
+                        <th>Proof Submitted</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = $result->fetch_assoc()): 
+                        $claimStatus = !empty($row['status']) ? strtolower($row['status']) : 'pending';
+                        $statusText = ucfirst($claimStatus);
+                        ?>
+                        <tr>
+                            <td>
+                                <strong>Category:</strong> <?= htmlspecialchars($row['category'] ?? 'N/A') ?><br>
+                                <strong>Description:</strong> <?= htmlspecialchars($row['description'] ?? 'N/A') ?><br>
+                                <strong>Location:</strong> <?= htmlspecialchars($row['location'] ?? 'N/A') ?><br>
+                                <strong>Date Found:</strong> <?= htmlspecialchars($row['date_found'] ?? 'N/A') ?>
+                            </td>
+                            <td>
+                                <strong>Name:</strong> <?= htmlspecialchars($row['claimant_name'] ?? 'N/A') ?><br>
+                                <strong>Email:</strong> <?= htmlspecialchars($row['claimant_email'] ?? 'N/A') ?><br>
+                                <strong>Phone:</strong> <?= htmlspecialchars($row['claimant_phone'] ?? 'N/A') ?><br>
+                                <strong>Unique Features:</strong> <?= htmlspecialchars($row['unique_features'] ?? 'N/A') ?>
+                            </td>
+                            <td>
+                                <?php if (!empty($row['proof_image'])): ?>
+                                    <?php $proofImagePath = "../uploads/proof_images/" . basename($row['proof_image']); ?>
+                                    <button class="btn btn-info view-image-btn" data-image="<?= htmlspecialchars($proofImagePath) ?>">View Image</button>
+                                <?php else: ?>
+                                    No Image
+                                <?php endif; ?>
+                            </td>
+                            <td id="claim-status-<?= (int)$row['claim_id'] ?>">
+                                <span class="status-badge <?= $claimStatus ?>">
+                                    <?= $statusText ?>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button onclick="updateClaimStatus('approve', <?= (int)$row['claim_id'] ?>)" class="btn btn-success">Approve</button>
+                                    <button onclick="updateClaimStatus('reject', <?= (int)$row['claim_id'] ?>)" class="btn btn-danger">Reject</button>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
         </div>
-    </div>
-    
+    <?php else: ?>
+        <p>No claim requests to manage.</p>
+    <?php endif; ?>
+</div>
+
+<script>
+    function updateClaimStatus(action, claim_id) {
+        if (!confirm(`Are you sure you want to ${action} this claim?`)) {
+            return;
+        }
+
+        $.ajax({
+            url: 'update_claim_status.php',  
+            data: {
+                action: action,
+                claim_id: claim_id
+            },
+            success: function(response) {
+                var result = JSON.parse(response);
+                if (result.success) {
+                    alert(result.message);  
+                    location.reload();  
+                } else {
+                    alert(result.message);  
+                }
+            },
+            error: function() {
+                alert('An error occurred while processing the request.');
+            }
+        });
+    }
+</script>
+
+
     <!-- Back to Dashboard Button -->
     <a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
 </div>
@@ -319,32 +335,51 @@ require_once('../config/db.php');
     
     // Function to update the status of lost/found items via AJAX
     function updateItemStatus(type, action, itemId) {
-        if (!type || !action || !itemId) {
-            alert('Missing required parameters');
-            return;
-        }
+    if (!type || !action || !itemId) {
+        alert('Missing required parameters');
+        return;
+    }
 
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `process_item.php?action=${action}&type=${type}&item_id=${itemId}`, true);
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                if (response.success) {
-                    // Update the status badge in the table
-                    const statusCell = document.getElementById(`${type}-status-${itemId}`);
-                    statusCell.innerHTML = `<span class="status-badge ${response.new_status}">${response.new_status.charAt(0).toUpperCase() + response.new_status.slice(1)}</span>`;
-                } else {
-                    alert(response.message || 'An error occurred while updating the status.');
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `process_item.php?action=${action}&type=${type}&item_id=${itemId}`, true);
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            let response;
+            try {
+                response = JSON.parse(xhr.responseText);
+            } catch (e) {
+                alert("Invalid server response.");
+                return;
+            }
+
+            if (response.success) {
+                const statusCell = document.getElementById(`${type}-status-${itemId}`);
+                if (statusCell) {
+                    statusCell.innerHTML = `
+                        <span class="status-badge ${response.new_status.toLowerCase()}">
+                            ${response.new_status.charAt(0).toUpperCase() + response.new_status.slice(1)}
+                        </span>
+                    `;
+                    // Add a visual effect
+                    statusCell.classList.add("status-updated");
+                    setTimeout(() => statusCell.classList.remove("status-updated"), 2000);
                 }
             } else {
-                alert("An error occurred while processing the request.");
+                alert(response.message || 'An error occurred while updating the status.');
             }
-        };
-        xhr.onerror = function () {
-            alert("An error occurred while connecting to the server.");
-        };
-        xhr.send();
-    }
+        } else {
+            alert("An error occurred while processing the request.");
+        }
+    };
+
+    xhr.onerror = function () {
+        alert("An error occurred while connecting to the server.");
+    };
+
+    xhr.send();
+}
+
     
     // Function to update the status of claims via AJAX
     function updateClaimStatus(action, claimId) {

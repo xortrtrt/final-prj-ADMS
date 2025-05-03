@@ -16,15 +16,15 @@ require_once('../config/db.php');
 // Get current user ID
 $current_user_id = $_SESSION['user_id'];
 
-// Fetch recent lost/found items (limit 5)
-$sql_lost = "SELECT * FROM lost_item ORDER BY date_lost DESC LIMIT 5";
+// Fetch recent lost/found items 
+$sql_lost = "SELECT * FROM lost_item ORDER BY date_lost DESC LIMIT 10";
 $lost_items = $conn->query($sql_lost);
 if (!$lost_items) {
     $lost_items = new stdClass();
     $lost_items->num_rows = 0;
 }
 
-$sql_found = "SELECT * FROM found_item ORDER BY date_found DESC LIMIT 5";
+$sql_found = "SELECT * FROM found_item ORDER BY date_found DESC LIMIT 10";
 $found_items = $conn->query($sql_found);
 if (!$found_items) {
     $found_items = new stdClass();
@@ -36,7 +36,7 @@ $search_results = new stdClass();
 $search_results->num_rows = 0;
 if (isset($_POST['search'])) {
     $search_query = $conn->real_escape_string($_POST['search_query']);
-    $sql_search = "SELECT * FROM found_item WHERE category LIKE '%$search_query%' OR description LIKE '%$search_query%' 
+    $sql_search = "SELECT  * FROM found_item WHERE category LIKE '%$search_query%' OR description LIKE '%$search_query%' 
                    UNION 
                    SELECT * FROM lost_item WHERE category LIKE '%$search_query%' OR description LIKE '%$search_query%'";
     $search_results = $conn->query($sql_search);

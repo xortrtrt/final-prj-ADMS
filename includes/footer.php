@@ -15,11 +15,11 @@
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul class="footer-links">
-                    <li><a href="/Lost_Found_System/index.php">Home</a></li>
-                    <li><a href="/Lost_Found_System/pages/dashboard.php">Dashboard</a></li>
-                    <li><a href="/Lost_Found_System/pages/report_lost.php">Report Lost</a></li>
-                    <li><a href="/Lost_Found_System/pages/report_found.php">Report Found</a></li>
-                    <li><a href="/Lost_Found_System/pages/contact_us.php">Contact Us</a></li>
+                    <li><a href="/pages/index.php">Home</a></li>
+                    <li><a href="/pages/dashboard.php">Dashboard</a></li>
+                    <li><a href="/pages/report_lost.php">Report Lost</a></li>
+                    <li><a href="/pages/report_found.php">Report Found</a></li>
+                    <li><a href="/contact_us.php">Contact Us</a></li>
                 </ul>
             </div>
             

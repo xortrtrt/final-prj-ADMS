@@ -10,6 +10,8 @@ require_once('../config/db.php');
 require_once('../send_email.php');  
 ?>
 
+<link rel="stylesheet" href="../assets/css/admin.css">
+
 <div class="admin-dashboard">
     <h2>Admin Dashboard</h2>
     
@@ -251,29 +253,62 @@ require_once('../send_email.php');
 
 <script>
     function updateClaimStatus(action, claim_id) {
+        if (!action || !claim_id) {
+            alert('Missing required parameters');
+            return;
+        }
+
         if (!confirm(`Are you sure you want to ${action} this claim?`)) {
             return;
         }
 
-        $.ajax({
-            url: 'update_claim_status.php',  
-            data: {
-                action: action,
-                claim_id: claim_id
-            },
-            success: function(response) {
-                var result = JSON.parse(response);
-                if (result.success) {
-                    alert(result.message);  
-                    location.reload();  
-                } else {
-                    alert(result.message);  
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", `process_claim.php?action=${action}&claim_id=${claim_id}`, true);
+        
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        // Update the status badge in the table
+                        const statusCell = document.getElementById(`claim-status-${claim_id}`);
+                        if (statusCell) {
+                            const newStatus = action === 'approve' ? 'approved' : 'rejected';
+                            statusCell.innerHTML = `
+                                <span class="status-badge ${newStatus}">
+                                    ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}
+                                </span>
+                            `;
+                            
+                            // Add a visual effect
+                            statusCell.classList.add("status-updated");
+                            setTimeout(() => statusCell.classList.remove("status-updated"), 2000);
+                            
+                            // Disable the action buttons after status update
+                            const actionButtons = statusCell.closest('tr').querySelector('.action-buttons');
+                            if (actionButtons) {
+                                actionButtons.innerHTML = '<span class="text-muted">Status Updated</span>';
+                            }
+                        }
+                        
+                        // Show success message
+                        alert(response.message);
+                    } else {
+                        alert(response.message || 'An error occurred while updating the claim status.');
+                    }
+                } catch (e) {
+                    alert('Error parsing server response.');
                 }
-            },
-            error: function() {
-                alert('An error occurred while processing the request.');
+            } else {
+                alert("An error occurred while processing the request.");
             }
-        });
+        };
+        
+        xhr.onerror = function () {
+            alert("An error occurred while connecting to the server.");
+        };
+        
+        xhr.send();
     }
 </script>
 
@@ -379,303 +414,6 @@ require_once('../send_email.php');
 
     xhr.send();
 }
-
-    
-    // Function to update the status of claims via AJAX
-    function updateClaimStatus(action, claimId) {
-        if (!action || !claimId) {
-            alert('Missing required parameters');
-            return;
-        }
-
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `process_claim.php?action=${action}&claim_id=${claimId}`, true);
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                if (response.success) {
-                    // Update the status badge in the table
-                    location.reload(); // Keep reload for claims as it affects multiple elements
-                } else {
-                    alert(response.message || 'An error occurred while updating the claim status.');
-                }
-            } else {
-                alert("An error occurred while processing the request.");
-            }
-        };
-        xhr.onerror = function () {
-            alert("An error occurred while connecting to the server.");
-        };
-        xhr.send();
-    }
 </script>
-
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f9f9f9;
-        color: #333;
-        margin: 0;
-        padding: 0;
-        position: relative;
-    }
-
-    /* Add background image with overlay */
-    body::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url('../assets/images/campus-slider-main-1.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        z-index: -2;
-    }
-
-    /* Add black overlay */
-    body::after {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.28);
-        z-index: -1;
-    }
-
-    .admin-dashboard {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-
-    h2 {
-        text-align: center;
-        margin-top: 20px;
-        color: #2e7d32;
-    }
-
-    h3 {
-        color: #2e7d32;
-        margin-bottom: 20px;
-    }
-
-    /* Tab Styles */
-    .tab-container {
-        margin-top: 30px;
-    }
-
-    .tabs {
-        display: flex;
-        border-bottom: 2px solid #ddd;
-        margin-bottom: 20px;
-    }
-
-    .tab-btn {
-        padding: 12px 24px;
-        background-color: #f1f1f1;
-        border: none;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-        transition: all 0.3s ease;
-    }
-
-    .tab-btn:hover {
-        background-color: #ddd;
-    }
-
-    .tab-btn.active {
-        background-color: #2e7d32;
-        color: white;
-    }
-
-    .tab-content {
-        display: none;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-
-    /* Table Styles */
-    .table-container {
-        overflow-x: auto;
-        margin-top: 20px;
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        background-color: #fff;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .table th, .table td {
-        padding: 15px;
-        text-align: left;
-        border: 1px solid #ddd;
-        font-size: 14px;
-    }
-
-    .table th {
-        background-color: #2e7d32;
-        color: white;
-        font-size: 16px;
-    }
-
-    .table tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-
-    .table tr:hover {
-        background-color: #f1f1f1;
-    }
-
-    /* Button Styles */
-    .btn {
-        padding: 8px 15px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-success {
-        background-color: #28a745;
-        color: white;
-    }
-
-    .btn-success:hover {
-        background-color: #1e7e34;
-    }
-
-    .btn-danger {
-        background-color: #dc3545;
-        color: white;
-    }
-
-    .btn-danger:hover {
-        background-color: #a71d2a;
-    }
-
-    .btn-warning {
-        background-color: #ffc107;
-        color: white;
-    }
-
-    .btn-warning:hover {
-        background-color: #e0a800;
-    }
-
-    .btn-info {
-        background-color: #17a2b8;
-        color: white;
-    }
-
-    .btn-info:hover {
-        background-color: #138496;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-        text-decoration: none;
-        padding: 12px 25px;
-        border-radius: 5px;
-        display: inline-block;
-        margin-top: 20px;
-    }
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
-    }
-
-    /* Action Buttons */
-    .action-buttons {
-        display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-
-    /* Modal Styles */
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-    }
-
-    .modal-content {
-        margin: auto;
-        display: block;
-        max-width: 80%;
-        max-height: 80%;
-        position: relative;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-
-    .modal-content img {
-        width: 100%;
-        height: auto;
-        border-radius: 5px;
-    }
-
-    .close {
-        position: absolute;
-        top: -30px;
-        right: 0;
-        color: white;
-        font-size: 30px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    /* Status Badge Styles */
-    .status-badge {
-        display: inline-block;
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-weight: 600;
-        font-size: 12px;
-        text-transform: uppercase;
-    }
-    
-    .status-badge.pending {
-        background-color: #fff3e0;
-        color: #f57c00;
-    }
-    
-    .status-badge.approved {
-        background-color: #e8f5e9;
-        color: #2e7d32;
-    }
-    
-    .status-badge.rejected {
-        background-color: #ffebee;
-        color: #c62828;
-    }
-    
-    .status-badge.unclaimed {
-        background-color: #e3f2fd;
-        color: #1565c0;
-    }
-</style>
 
 <?php include('../includes/footer.php'); ?>

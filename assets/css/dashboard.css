@@ -1,0 +1,233 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)), url('../images/campus-slider-main-1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #333;
+    min-height: 100vh;
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+}
+
+h2 {
+    text-align: center;
+    margin-top: 20px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-size: 2.5em;
+    padding: 20px;
+}
+
+/* Header Actions */
+.header-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.header-actions a {
+    padding: 15px 25px;
+    text-decoration: none;
+    color: white;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    background-color: #CC0000;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.header-actions a:hover {
+    background-color: #990000;
+    transform: translateY(-2px);
+}
+
+.header-actions a i {
+    font-size: 1.1em;
+}
+
+/* Search Bar */
+.search-bar {
+    text-align: center;
+    margin: 20px auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+}
+
+.search-bar form {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-bar input[type="text"] {
+    flex: 1;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    min-width: 200px;
+}
+
+.search-bar button {
+    padding: 12px 24px;
+    background-color: #CC0000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.search-bar button:hover {
+    background-color: #990000;
+    transform: translateY(-2px);
+}
+
+/* Dashboard Sections */
+.dashboard-section {
+    margin: 20px auto;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+}
+
+.dashboard-section.dark {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.dashboard-section h3 {
+    margin-bottom: 20px;
+    color: #fff;
+    font-size: 1.5em;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.dashboard-section h3 i {
+    color: #FFD700;
+}
+
+/* Items Grid */
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.item-card {
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+}
+
+.item-card h4 {
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: #333;
+}
+
+.item-card p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.item-card small {
+    display: block;
+    margin-bottom: 10px;
+    color: #777;
+}
+
+/* Action Buttons */
+.action-btn, .mark-found-btn, .claim-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    background-color: #CC0000;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 4px;
+}
+
+.action-btn:hover, .mark-found-btn:hover, .claim-btn:hover {
+    background-color: #990000;
+    transform: translateY(-2px);
+}
+
+.item-actions {
+    margin-top: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .header-actions a {
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .search-bar form {
+        flex-direction: column;
+    }
+
+    .search-bar input[type="text"] {
+        width: 100%;
+    }
+
+    .search-bar button {
+        width: 100%;
+    }
+
+    .items-grid {
+        grid-template-columns: 1fr;
+    }
+} 

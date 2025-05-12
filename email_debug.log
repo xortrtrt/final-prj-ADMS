@@ -1,0 +1,6 @@
+SMTP [1]: SMTP ERROR: Failed to connect to server: No connection could be made because the target machine actively refused it (10061)
+SMTP [2]: SMTP Error: Could not connect to SMTP host. Failed to connect to server
+PHPMailer Error: SMTP Error: Could not connect to SMTP host. Failed to connect to server SMTP server error: Failed to connect to server SMTP code: 10061 Additional SMTP info: No connection could be made because the target machine actively refused it
+SMTP [1]: SMTP ERROR: Failed to connect to server: No connection could be made because the target machine actively refused it (10061)
+SMTP [2]: SMTP Error: Could not connect to SMTP host. Failed to connect to server
+PHPMailer Error: SMTP Error: Could not connect to SMTP host. Failed to connect to server SMTP server error: Failed to connect to server SMTP code: 10061 Additional SMTP info: No connection could be made because the target machine actively refused it

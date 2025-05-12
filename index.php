@@ -39,14 +39,16 @@ if (!$result_found) {
 ?>
 
 <style>
+    /* Hero Section */
     .hero {
         position: relative;
-        padding: 80px 0;
+        padding: 100px 0;
         background-image: url('assets/images/campus-slider-main-2.jpg');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
         margin-bottom: 0;
+        width: 100%;
     }
 
     .hero::before {
@@ -65,30 +67,49 @@ if (!$result_found) {
     .hero .container {
         position: relative;
         z-index: 1;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
     }
 
     .hero-content {
         text-align: center;
         color: white;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 15px;
     }
 
     .hero-content h1 {
-        font-size: 3em;
+        font-size: 3.5em;
         margin-bottom: 20px;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .hero-content p {
-        font-size: 1.2em;
+        font-size: 1.3em;
         margin-bottom: 30px;
         text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        display: inline-block;
+        text-align: center;
+        margin: 0 5px;
     }
 
     .btn-secondary {
         background-color: #CC0000;
         color: white;
         border: none;
-        margin-right: 15px;
     }
 
     .btn-outline {
@@ -99,71 +120,25 @@ if (!$result_found) {
 
     .btn-secondary:hover {
         background-color: #990000;
+        transform: translateY(-2px);
     }
 
     .btn-outline:hover {
         background-color: white;
         color: #CC0000;
+        transform: translateY(-2px);
     }
 
-    .action-btn {
-        display: inline-block;
-        padding: 8px 15px;
-        border-radius: 5px;
-        color: white;
-        text-decoration: none;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
-        margin-top: 10px;
-    }
-    
-    .section-title {
-        text-align: center;
-        font-size: 2em;
-        color: white;
-        margin-bottom: 30px;
-        font-weight: bold;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }
-    
-    .mark-found-btn {
-        background-color: #28a745;
-    }
-    
-    .mark-found-btn:hover {
-        background-color: #1e7e34;
-    }
-    
-    .claim-btn {
-        background-color: #007bff;
-    }
-    
-    .claim-btn:hover {
-        background-color: #0056b3;
-    }
-    
-    .item-card {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 10px;
-        padding: 20px;
-        margin: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-    }
-    
-    /* Dashboard Section */
+    /* Items Section */
     .section.items-section {
         position: relative;
-        padding: 50px 0;
+        padding: 80px 0;
         margin: 0;
         background-image: url('assets/images/campus-slider-main-2.jpg');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
+        width: 100%;
     }
 
     .section.items-section::before {
@@ -182,6 +157,161 @@ if (!$result_found) {
     .section.items-section .container {
         position: relative;
         z-index: 1;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5em;
+        color: white;
+        margin-bottom: 40px;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        padding: 0 15px;
+    }
+
+    /* Dashboard Search */
+    .dashboard-search {
+        max-width: 600px;
+        margin: 0 auto 40px;
+        padding: 0 15px;
+    }
+
+    .dashboard-search form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .dashboard-search .form-control {
+        padding: 12px 20px;
+        border-radius: 5px;
+        border: none;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        flex: 1;
+    }
+
+    .dashboard-search .btn {
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    /* Items Grid */
+    .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        padding: 20px 15px;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .item-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin: 0;
+    }
+
+    .item-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .item-card h3 {
+        color: #333;
+        font-size: 1.4em;
+        margin-bottom: 15px;
+    }
+
+    .item-card p {
+        color: #666;
+        margin-bottom: 15px;
+        line-height: 1.6;
+    }
+
+    .item-card small {
+        color: #888;
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    /* Action Buttons */
+    .item-actions {
+        margin-top: auto;
+    }
+
+    .action-btn {
+        display: block;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-align: center;
+        width: 100%;
+    }
+
+    .mark-found-btn {
+        background-color: #28a745;
+    }
+
+    .mark-found-btn:hover {
+        background-color: #1e7e34;
+        transform: translateY(-2px);
+    }
+
+    .claim-btn {
+        background-color: #007bff;
+    }
+
+    .claim-btn:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 2.5em;
+        }
+
+        .hero-content p {
+            font-size: 1.1em;
+        }
+
+        .section-title {
+            font-size: 2em;
+        }
+
+        .items-grid {
+            grid-template-columns: 1fr;
+            padding: 20px 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 0.9em;
+            margin: 5px;
+        }
+
+        .dashboard-search form {
+            flex-direction: column;
+        }
+
+        .dashboard-search .btn {
+            width: 100%;
+        }
     }
 </style>
 
